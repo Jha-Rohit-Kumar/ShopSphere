@@ -1,0 +1,32 @@
+# Java / Maven
+**/target/
+*.class
+
+# React / Node
+**/node_modules/
+**/dist/
+npm-debug.log*
+
+# Secrets
+.env
+.env.*
+!.env.example
+application-local.yaml
+application-local.yml
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Mac
+.DS_Store
+
+# Uploaded files
+**/uploads/
+
+# Logs
+*.log
+
+# Root-level PNG files
+/*.png
