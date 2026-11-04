@@ -1,28 +1,21 @@
-import axios from 'axios';
 import type { Product, CreateProductRequest } from '../types/Product';
+import { productApiClient } from './apiClient';
 
-const API_BASE_URL = 'http://localhost:8081/api/v1/product';
-
-const apiClient = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json'
-    }
-});
+const PRODUCT_API = '/api/v1/product';
 
 export const getAllProducts = async (): Promise<Product[]> => {
-    const response = await apiClient.get<Product[]>('');
+    const response = await productApiClient.get<Product[]>(PRODUCT_API);
     return response.data;
 };
 
 export const getProductById = async (id: string): Promise<Product> => {
-    const response = await apiClient.get<Product>(`/${id}`);
+    const response = await productApiClient.get<Product>(`${PRODUCT_API}/${id}`);
     return response.data;
 };
 
 
 export const createProduct = async (request: CreateProductRequest): Promise<Product> => {
-    const response = await apiClient.post<Product>('', request);
+    const response = await productApiClient.post<Product>(PRODUCT_API, request);
     return response.data;
 };
 
@@ -31,10 +24,10 @@ export const updateProduct = async (
     request: CreateProductRequest
 ): Promise<Product> => {
 
-    const response = await apiClient.put<Product>(`/${id}`, request);
+    const response = await productApiClient.put<Product>(`${PRODUCT_API}/${id}`, request);
     return response.data;
 };
 
 export const deleteProduct = async (id: string): Promise<void> => {
-    await apiClient.delete(`/${id}`);
+    await productApiClient.delete(`${PRODUCT_API}/${id}`);
 };

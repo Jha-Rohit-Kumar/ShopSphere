@@ -1,27 +1,23 @@
-import axios from "axios";
-import type { User, CreateUserRequest } from "../types/User";
 
-const API_BASE_URL = 'http://localhost:8081/api/v1/user';
+import type { User, CreateUserRequest } from '../types/User';
+import { userApiClient } from './apiClient';
 
-const apiClient = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json'
-    }
-});
+const USER_API = '/api/v1/user';
 
 export const getAllUsers = async (): Promise<User[]> => {
-    const response = await apiClient.get<User[]>('');
+    const response = await userApiClient.get<User[]>(USER_API);
     return response.data;
 };
 
 export const getUserById = async (id: string): Promise<User> => {
-    const response = await apiClient.get<User>(`/${id}`);
+    const response = await userApiClient.get<User>(`${USER_API}/${id}`);
     return response.data;
 };
 
-export const createUser = async (request: CreateUserRequest): Promise<User> => {
-    const response = await apiClient.post<User>('', request);
+export const createUser = async (
+    request: CreateUserRequest
+): Promise<User> => {
+    const response = await userApiClient.post<User>(USER_API, request);
     return response.data;
 };
 
@@ -29,11 +25,13 @@ export const updateUser = async (
     id: string,
     request: CreateUserRequest
 ): Promise<User> => {
-
-    const response = await apiClient.put<User>(`/${id}`, request);
+    const response = await userApiClient.put<User>(
+        `${USER_API}/${id}`,
+        request
+    );
     return response.data;
 };
 
 export const deleteUser = async (id: string): Promise<void> => {
-    await apiClient.delete(`/${id}`);
+    await userApiClient.delete(`${USER_API}/${id}`);
 };

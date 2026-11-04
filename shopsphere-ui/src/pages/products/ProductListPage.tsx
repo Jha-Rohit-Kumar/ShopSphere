@@ -64,7 +64,7 @@ return (
 
             <button
                 className="btn btn-primary px-4"
-                onClick={() => navigate('/products/new')}
+                onClick={() => navigate('/admin/products/new')}
             >
                 + Add Product
             </button>
@@ -125,7 +125,7 @@ return (
                                         </p>
                                         <button
                                             className="btn btn-primary btn-sm"
-                                            onClick={() => navigate('/products/new')}
+                                            onClick={() => navigate('/admin/products/new')}
                                         >
                                             Add your first product
                                         </button>
@@ -167,7 +167,7 @@ return (
                                             <div className="d-flex gap-2">
                                                 <button
                                                     className="btn btn-sm btn-outline-primary"
-                                                    onClick={() => navigate(`/products/edit/${product.id}`)}
+                                                    onClick={() => navigate(`/admin/products/edit/${product.id}`)}
                                                 >
                                                     Edit
                                                 </button>

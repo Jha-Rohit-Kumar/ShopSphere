@@ -8,14 +8,14 @@ function CreateProductPage() {
 
     const handleCreate = async (data: CreateProductRequest) => {
         await createProduct(data);
-        navigate('/products');
+        navigate('/admin/products');
     };
 
     return (
         <ProductForm
             onSubmit={handleCreate}
             submitLabel="Add Product"
-            onCancel={() => navigate('/products')}
+            onCancel={() => navigate('/admin/products')}
         />
     );
 }

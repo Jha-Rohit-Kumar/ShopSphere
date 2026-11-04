@@ -1,5 +1,6 @@
 package com.shpsphere.user.service;
 
+import com.shpsphere.user.dto.CreateUserRequest;
 import com.shpsphere.user.dto.UpdateUserRequest;
 import com.shpsphere.user.entity.User;
 import com.shpsphere.user.enums.UserRole;
@@ -11,11 +12,13 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,11 +31,14 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Value("${app.file.upload-dir}")
     private String uploadDir;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User getUserbyId(UUID id) {
@@ -189,5 +195,53 @@ public class UserService {
                     "You are not authorized to access this user's profile"
             );
         }
+    }
+
+
+    public User createUser(CreateUserRequest request) {
+
+        // Only ADMIN can create users
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null ||
+                !(authentication.getPrincipal() instanceof User authenticatedUser) ||
+                authenticatedUser.getRole() != UserRole.ADMIN) {
+
+            throw new AccessDeniedException(
+                    "Only administrators can create users"
+            );
+        }
+
+        String email = request.getEmail().trim().toLowerCase();
+
+        // Check duplicate email
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new UserAlreadyAvailableException(
+                    "User already exists with email: " + email
+            );
+        }
+
+        // Validate password byte length
+        if (request.getPassword().getBytes(StandardCharsets.UTF_8).length > 72) {
+            throw new InvalidPasswordException(
+                    "Password must not exceed 72 UTF-8 bytes"
+            );
+        }
+
+        User user = new User();
+
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(email);
+        user.setPhone(request.getPhone());
+        user.setRole(request.getRole());
+
+        // Always encode the password
+        user.setPasswordHash(
+                passwordEncoder.encode(request.getPassword())
+        );
+
+        return userRepository.save(user);
     }
 }

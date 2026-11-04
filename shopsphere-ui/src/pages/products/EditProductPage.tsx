@@ -42,7 +42,7 @@ function EditProductPage() {
         if (!id) return;
 
         await updateProduct(id, data);
-        navigate('/products');
+        navigate('/admin/products');
     };
 
     if (loading) {
@@ -58,7 +58,7 @@ function EditProductPage() {
             initialData={product}
             onSubmit={handleUpdate}
             submitLabel="Update Product"
-            onCancel={() => navigate('/products')}
+            onCancel={() => navigate('/admin/products')}
         />
     );
 }

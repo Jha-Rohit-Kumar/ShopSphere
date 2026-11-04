@@ -1,6 +1,7 @@
 package com.shpsphere.user.controller;
 
 
+import com.shpsphere.user.dto.CreateUserRequest;
 import com.shpsphere.user.dto.UpdateUserRequest;
 import com.shpsphere.user.entity.User;
 import com.shpsphere.user.service.UserService;
@@ -21,6 +22,12 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public User createUser(@Valid @RequestBody CreateUserRequest request) {
+        return userService.createUser(request);
     }
 
     @GetMapping("/{id}")
