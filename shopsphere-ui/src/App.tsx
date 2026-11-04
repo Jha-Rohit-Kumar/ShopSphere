@@ -15,6 +15,8 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import AdminRoute from './components/auth/AdminRoute';
 import AppLayout from './components/layout/AppLayout';
 import CreateUserPage from './pages/users/CreateUserPage';
+import ViewUserPage from './pages/users/ViewUserPage';
+import EditUserPage from './pages/users/EditUserPage';
 
 function App() {
 
@@ -54,7 +56,14 @@ function App() {
                                 path="/admin/users/new"
                                 element={<CreateUserPage />}
                             />
-
+                            <Route 
+                                path="/admin/users/:id" 
+                                element={<ViewUserPage />}
+                            />
+                            <Route
+                                path="/admin/users/edit/:id"
+                                element={<EditUserPage />}
+                            />
                             {/* Product Management */}
                             <Route
                                 path="/admin/products"

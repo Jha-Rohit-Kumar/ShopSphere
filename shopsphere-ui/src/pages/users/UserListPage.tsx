@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import type { User } from '../../types/User';
 import { deleteUser, getAllUsers } from '../../services/userService';
+import UserPhoto from '../../components/users/UserPhoto';
 
 function UserListPage() {
 
@@ -131,6 +132,7 @@ function UserListPage() {
 
                             <thead>
                                 <tr>
+                                    <th>Photo</th>
                                     <th>First Name</th>
                                     <th>Last Name</th>
                                     <th>Email</th>
@@ -159,7 +161,9 @@ function UserListPage() {
                                 ) : (
                                     users.map((user) => (
                                         <tr key={user.id}>
-
+                                            <td>
+                                                <UserPhoto user={user} />
+                                            </td>
                                             <td className="fw-semibold">
                                                 {user.firstName}
                                             </td>
@@ -188,7 +192,7 @@ function UserListPage() {
                                                     <button
                                                         className="btn btn-sm btn-outline-primary"
                                                         onClick={() =>
-                                                            navigate(`/users/${user.id}`)
+                                                            navigate(`/admin/users/${user.id}`)
                                                         }
                                                     >
                                                         View
@@ -197,7 +201,7 @@ function UserListPage() {
                                                     <button
                                                         className="btn btn-sm btn-outline-secondary"
                                                         onClick={() =>
-                                                            navigate(`/users/edit/${user.id}`)
+                                                            navigate(`/admin/users/edit/${user.id}`)
                                                         }
                                                     >
                                                         Edit

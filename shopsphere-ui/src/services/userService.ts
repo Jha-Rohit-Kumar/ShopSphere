@@ -1,5 +1,5 @@
 
-import type { User, CreateUserRequest } from '../types/User';
+import type { User, CreateUserRequest, UpdateUserRequest } from '../types/User';
 import { userApiClient } from './apiClient';
 
 const USER_API = '/api/v1/user';
@@ -23,7 +23,7 @@ export const createUser = async (
 
 export const updateUser = async (
     id: string,
-    request: CreateUserRequest
+    request: UpdateUserRequest
 ): Promise<User> => {
     const response = await userApiClient.put<User>(
         `${USER_API}/${id}`,
@@ -34,4 +34,39 @@ export const updateUser = async (
 
 export const deleteUser = async (id: string): Promise<void> => {
     await userApiClient.delete(`${USER_API}/${id}`);
+};
+
+export const uploadUserPhoto = async (
+    id: string,
+    file: File
+): Promise<User> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await userApiClient.post<User>(
+        `${USER_API}/${id}/photo`,
+        formData,
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+    );
+
+    return response.data;
+};
+
+export const getUserPhoto = async (id: string): Promise<Blob> => {
+    const response = await userApiClient.get<Blob>(
+        `${USER_API}/${id}/photo`,
+        {
+            responseType: 'blob'
+        }
+    );
+
+    return response.data;
+};
+
+export const deleteUserPhoto = async (id: string): Promise<void> => {
+    await userApiClient.delete(`${USER_API}/${id}/photo`);
 };

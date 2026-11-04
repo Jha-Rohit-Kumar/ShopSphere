@@ -4,6 +4,7 @@ package com.shpsphere.user.dto;
 import com.shpsphere.user.enums.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -19,7 +20,7 @@ public class UpdateUserRequest {
     private String email;
     @Size(max = 15)
     private String phone;
-    @NotBlank
+    @NotNull
     private UserRole role;
     private String profileImageUrl;
     private String profileImageName;
