@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import type { User } from '../../types/User';
 import { deleteUser, getAllUsers } from '../../services/userService';
 import UserPhoto from '../../components/users/UserPhoto';
+import { useAuth } from '../../context/AuthContext';
 
 function UserListPage() {
 
@@ -16,6 +17,8 @@ function UserListPage() {
 
     const navigate = useNavigate();
 
+    const { user: loggedInUser } = useAuth();
+    
     useEffect(() => {
         const fetchUsers = async () => {
             try {
@@ -209,7 +212,15 @@ function UserListPage() {
 
                                                     <button
                                                         className="btn btn-sm btn-outline-danger"
-                                                        disabled={deletingUserId !== null}
+                                                        disabled={
+                                                            deletingUserId !== null ||
+                                                            loggedInUser?.id === user.id
+                                                        }
+                                                        title={
+                                                            loggedInUser?.id === user.id
+                                                                ? "You cannot delete your own account"
+                                                                : "Delete user"
+                                                        }
                                                         onClick={() => callDeleteUser(user.id)}
                                                     >
                                                         {deletingUserId === user.id ? (

@@ -50,6 +50,21 @@ function ProductStorePage() {
                     {products.map((product) => (
                         <div className="col-md-4 col-lg-3 mb-4" key={product.id}>
                             <div className="card h-100 shadow-sm">
+                                <div className="product-image-container">
+                                    <img
+                                        src={product.imageUrl || '/images/product-placeholder.png'}
+                                        className="card-img-top"
+                                        alt={product.name}
+                                        style={{
+                                            height: '220px',
+                                            objectFit: 'contain',
+                                            padding: '15px'
+                                        }}
+                                        onError={(e) => {
+                                            e.currentTarget.src = '/images/product-placeholder.png';
+                                        }}
+                                    />
+                                </div>
                                 <div className="card-body">
                                     <h5 className="card-title">
                                         {product.name}

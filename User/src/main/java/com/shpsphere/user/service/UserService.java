@@ -41,6 +41,62 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    public User createUser(CreateUserRequest request) {
+
+        // Only ADMIN can create users
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null ||
+                !(authentication.getPrincipal() instanceof User authenticatedUser) ||
+                authenticatedUser.getRole() != UserRole.ADMIN) {
+
+            throw new AccessDeniedException(
+                    "Only administrators can create users"
+            );
+        }
+
+        String email = request.getEmail().trim().toLowerCase();
+
+        // Check duplicate email
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new UserAlreadyAvailableException(
+                    "User already exists with email: " + email
+            );
+        }
+
+        // Validate password byte length
+        if (request.getPassword().getBytes(StandardCharsets.UTF_8).length > 72) {
+            throw new InvalidPasswordException(
+                    "Password must not exceed 72 UTF-8 bytes"
+            );
+        }
+
+        User user = new User();
+
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(email);
+
+        String phone = request.getPhone();
+
+        user.setPhone(
+                phone == null || phone.isBlank()
+                        ? null
+                        : phone.trim()
+        );
+
+        user.setRole(request.getRole());
+
+        // Always encode the password
+        user.setPasswordHash(
+                passwordEncoder.encode(request.getPassword())
+        );
+
+        return userRepository.save(user);
+    }
+
+
     public User getUserbyId(UUID id) {
         validateOwnership(id);
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User doesn't exist"));
@@ -64,12 +120,29 @@ public class UserService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone());
+        String phone = request.getPhone();
+
+        user.setPhone(
+                phone == null || phone.isBlank()
+                        ? null
+                        : phone.trim()
+        );
+
         user.setRole(request.getRole());
         return userRepository.save(user);
     }
 
     public void deleteUserById(UUID id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User currentUser = (User) authentication.getPrincipal();
+
+        if (currentUser.getId().equals(id)) {
+            throw new AccessDeniedException(
+                    "You cannot delete your own account."
+            );
+        }
+
         User user = getUserbyId(id);
         userRepository.delete(user);
     }
@@ -196,53 +269,5 @@ public class UserService {
                     "You are not authorized to access this user's profile"
             );
         }
-    }
-
-
-    public User createUser(CreateUserRequest request) {
-
-        // Only ADMIN can create users
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null ||
-                !(authentication.getPrincipal() instanceof User authenticatedUser) ||
-                authenticatedUser.getRole() != UserRole.ADMIN) {
-
-            throw new AccessDeniedException(
-                    "Only administrators can create users"
-            );
-        }
-
-        String email = request.getEmail().trim().toLowerCase();
-
-        // Check duplicate email
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new UserAlreadyAvailableException(
-                    "User already exists with email: " + email
-            );
-        }
-
-        // Validate password byte length
-        if (request.getPassword().getBytes(StandardCharsets.UTF_8).length > 72) {
-            throw new InvalidPasswordException(
-                    "Password must not exceed 72 UTF-8 bytes"
-            );
-        }
-
-        User user = new User();
-
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setEmail(email);
-        user.setPhone(request.getPhone());
-        user.setRole(request.getRole());
-
-        // Always encode the password
-        user.setPasswordHash(
-                passwordEncoder.encode(request.getPassword())
-        );
-
-        return userRepository.save(user);
     }
 }
