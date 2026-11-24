@@ -30,6 +30,7 @@ public class CartItem {
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
+    @Column(name = "product_id", nullable = false)
     private UUID productId;
 
     @Column(nullable = false, precision = 12, scale = 2)
