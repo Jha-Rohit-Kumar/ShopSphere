@@ -17,6 +17,7 @@ import AppLayout from './components/layout/AppLayout';
 import CreateUserPage from './pages/users/CreateUserPage';
 import ViewUserPage from './pages/users/ViewUserPage';
 import EditUserPage from './pages/users/EditUserPage';
+import CartPage from './pages/cart/CartPage';
 
 function App() {
 
@@ -37,6 +38,10 @@ function App() {
                         <Route
                             path="/products"
                             element={<ProductStorePage />}
+                        />
+                        <Route
+                            path="/cart"
+                            element={<CartPage />}
                         />
 
                         {/* Admin-only Routes */}

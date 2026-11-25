@@ -1,5 +1,7 @@
 package com.shopsphere.cart.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
@@ -26,12 +28,19 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @JsonIgnore
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
 
     @Column(name = "product_id", nullable = false)
     private UUID productId;
+
+    @Column(nullable = false)
+    private String productName;
+
+    private String imageUrl;
 
     @Column(nullable = false, precision = 12, scale = 2)
     @Positive

@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const USER_SERVICE_URL = 'http://localhost:8082';
 const PRODUCT_SERVICE_URL = 'http://localhost:8081';
+const CART_SERVICE_URL = 'http://localhost:8083';
 
 const createApiClient = (baseURL: string) => {
 
@@ -37,3 +38,5 @@ const createApiClient = (baseURL: string) => {
 export const userApiClient = createApiClient(USER_SERVICE_URL);
 
 export const productApiClient = createApiClient(PRODUCT_SERVICE_URL);
+
+export const cartApiClient = createApiClient(CART_SERVICE_URL);

@@ -2,12 +2,77 @@
 import { useEffect, useState } from 'react';
 import type { Product } from '../../types/Product';
 import { getAllProducts } from '../../services/productService';
+import { useAuth } from '../../context/AuthContext';
+import { isAxiosError } from 'axios';
+
+import { getActiveCartByCustomerId, createCart, addProductToCart} from '../../services/cartService';
+import type { Cart } from '../../types/Cart';
 
 function ProductStorePage() {
 
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    const { user, isAuthenticated } = useAuth();
+
+    const [addingProductId, setAddingProductId] = useState<string | null>(null);
+    const [cartMessage, setCartMessage] = useState('');
+    const [cartError, setCartError] = useState('');
+
+    const handleAddToCart = async (productId: string) => {
+
+    if (!isAuthenticated || !user) {
+        setCartError('Please login to add products to your cart.');
+        return;
+    }
+
+    try {
+        setAddingProductId(productId);
+        setCartMessage('');
+        setCartError('');
+
+        let cart: Cart;
+
+        try {
+            cart = await getActiveCartByCustomerId(user.id);
+
+        } catch (error: unknown) {
+
+            if (isAxiosError(error) && error.response?.status === 404) {
+
+                // Customer does not have an active cart.
+                cart = await createCart({
+                    customerId: user.id
+                });
+
+            } else {
+                throw error;
+            }
+        }
+
+        // Add product to the existing or newly created cart.
+        await addProductToCart(cart.id, {
+            productId,
+            quantity: 1
+        });
+
+        setCartMessage('Product added to cart successfully!');
+
+    } catch (error: unknown) {
+
+        console.error('Failed to add product to cart:', error);
+
+        setCartError(
+            isAxiosError(error)
+                ? error.response?.data?.message || 'Unable to add product to cart.'
+                : 'Something went wrong. Please try again.'
+        );
+
+    } finally {
+        setAddingProductId(null);
+    }
+};
 
     useEffect(() => {
 
@@ -42,6 +107,18 @@ function ProductStorePage() {
     return (
         <div className="container mt-4">
             <h2 className="mb-4">Shop Products</h2>
+
+            {cartMessage && (
+                <div className="alert alert-success">
+                    {cartMessage}
+                </div>
+            )}
+
+            {cartError && (
+                <div className="alert alert-danger">
+                    {cartError}
+                </div>
+            )}
 
             {products.length === 0 ? (
                 <p>No products available.</p>
@@ -87,9 +164,12 @@ function ProductStorePage() {
                                     <button
                                         type="button"
                                         className="btn btn-primary w-100"
-                                        disabled
+                                        onClick={() => handleAddToCart(product.id)}
+                                        disabled={addingProductId !== null}
                                     >
-                                        Add to Cart (Coming Soon)
+                                        {addingProductId === product.id
+                                            ? 'Adding...'
+                                            : 'Add to Cart'}
                                     </button>
                                 </div>
                             </div>

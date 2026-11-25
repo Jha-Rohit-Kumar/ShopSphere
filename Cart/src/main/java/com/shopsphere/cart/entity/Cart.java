@@ -1,5 +1,6 @@
 package com.shopsphere.cart.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.shopsphere.cart.enums.CartStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,6 +29,7 @@ public class Cart {
     private Instant createdAt;
     private Instant updatedAt;
 
+    @JsonManagedReference
     @OneToMany(
             mappedBy = "cart",
             cascade = CascadeType.ALL,

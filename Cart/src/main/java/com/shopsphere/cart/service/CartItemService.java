@@ -62,6 +62,8 @@ public class CartItemService {
             cartItem.setUnitPrice(productResponse.getPrice());
             cartItem.setProductId(addCartItemRequest.getProductId());
             cartItem.setQuantity(addCartItemRequest.getQuantity());
+            cartItem.setProductName(productResponse.getName());
+            cartItem.setImageUrl(productResponse.getImageUrl());
         } else {
             cartItem.setQuantity(cartItem.getQuantity() + addCartItemRequest.getQuantity());
         }
@@ -94,6 +96,7 @@ public class CartItemService {
                         new CartItemNotFoundException(
                                 "Cart item not found in the requested cart"
                         ));
+        cartItem.setQuantity(updateCartItemRequest.getQuantity());
 
         return cartItemRepository.save(cartItem);
     }
